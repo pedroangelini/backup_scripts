@@ -1,4 +1,3 @@
-logs
-.env
+# secrets
 restic_pass.txt
-
+.env

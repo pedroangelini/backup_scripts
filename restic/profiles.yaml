@@ -1,0 +1,90 @@
+# yaml-language-server: $schema=https://creativeprojects.github.io/resticprofile/jsonschema/config.json
+version: "2"
+
+global:
+  # priority is using priority class on windows, and "nice" on unixes
+  priority: low
+  # disks IO priority of restic
+  ionice: true
+  ionice-class: 2
+  ionice-level: 6
+
+  schedule-defaults:
+    after-network-online: true
+
+
+groups:
+  main:
+    profiles:
+      - imagens
+      - srv_docs
+      - home_assistant
+    schedules:
+      backup:
+        at: '*-*-* 02:00:00'
+        log: "/srv/var/logs/backup_scripts/restic-backup.log"
+      check:
+        at: '*-*-* 03:00:00'
+        log: "/srv/var/logs/backup_scripts/restic-check.log"
+
+
+profiles:
+  base:
+    env-file: ".env"
+    repository: "s3:https://s3.amazonaws.com/backup-restic-bucket"
+    password-file: "restic_pass.txt"
+    initialize: true
+    backup:
+      exclude-caches: true
+      one-file-system: true
+    retention:
+      after-backup: true
+      prune: true
+    check:
+      read-data-subset: 1M
+      schedule-log: "/srv/var/logs/backup_scripts/restic-check.log"
+
+  srv_docs:
+    inherit: base
+
+    backup:
+      source:
+        - "/mnt/dados/server_docs"
+
+    retention:
+      keep-daily: 7
+      keep-monthly: 3
+      keep-yearly: 1
+
+
+  imagens:
+    inherit: base
+
+    backup:
+      source:
+        - "/mnt/dados/Imagens"
+        - "/mnt/dados/immich-library/library"
+        - "/mnt/dados/immich-library/upload"
+        - "/mnt/dados/immich-library/profile"
+      exclude-file: "/mnt/dados/Imagens/.backupignore"
+
+    check:
+      read-data-subset: 20M
+
+    retention:
+      keep-daily: 2
+      keep-monthly: 12
+      keep-yearly: 2
+
+
+  home_assistant:
+    inherit: base
+
+    backup:
+      source:
+        - "/mnt/dados/HomeAssistantBackups"
+
+    retention:
+      keep-weekly: 5
+      keep-monthly: 2
+
