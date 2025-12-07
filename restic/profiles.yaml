@@ -15,6 +15,8 @@ global:
 
 groups:
   main:
+    description: All the main backup groups
+    continue-on-error: true
     profiles:
       - imagens
       - srv_docs
