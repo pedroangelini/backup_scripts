@@ -1,0 +1,4 @@
+.env
+restic_pass.txt
+*.txt
+rest_tmp/
