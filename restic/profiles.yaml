@@ -8,6 +8,10 @@ global:
   ionice: true
   ionice-class: 2
   ionice-level: 6
+  restic-lock-retry-after: 5m
+  # Ask restic to unlock a stale lock when its age is more than 2 hours
+  # and the option "force-inactive-lock" is enabled in the profile.
+  restic-stale-lock-age: 22h
 
   schedule-defaults:
     after-network-online: true
@@ -45,6 +49,7 @@ profiles:
     check:
       read-data-subset: 1M
       schedule-log: "/srv/var/logs/backup_scripts/restic-check.log"
+    force-inactive-lock: true
 
   srv_docs:
     inherit: base
