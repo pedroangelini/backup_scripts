@@ -45,7 +45,6 @@ profiles:
     env-file: ".env"
     repository: "s3:https://s3.amazonaws.com/backup-restic-bucket"
     password-file: "restic_pass.txt"
-    initialize: true
     status-file: '{{ $status_file }}'
     extended-status: true
     run-finally: 'cat {{ $status_file }} >> {{ $status_log_file }}'
