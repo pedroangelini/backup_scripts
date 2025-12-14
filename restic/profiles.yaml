@@ -1,6 +1,12 @@
 # yaml-language-server: $schema=https://creativeprojects.github.io/resticprofile/jsonschema/config.json
 version: "2"
 
+# reusable values
+{{ $backup_log_file := "/srv/var/logs/backup_scripts/restic-backup.log" }}
+{{ $check_log_file := "/srv/var/logs/backup_scripts/restic-check.log" }}
+{{ $status_file := "/srv/var/logs/backup_scripts/restic-status.json" }}
+{{ $status_log_file := "/srv/var/logs/backup_scripts/restic-status.json.log" }}
+
 global:
   # priority is using priority class on windows, and "nice" on unixes
   priority: low
@@ -28,10 +34,10 @@ groups:
     schedules:
       backup:
         at: '*-*-* 02:00:00'
-        log: "/srv/var/logs/backup_scripts/restic-backup.log"
+        log: '{{ $backup_log_file }}'
       check:
         at: '*-*-* 03:00:00'
-        log: "/srv/var/logs/backup_scripts/restic-check.log"
+        log: '{{ $check_log_file }}'
 
 
 profiles:
@@ -40,15 +46,29 @@ profiles:
     repository: "s3:https://s3.amazonaws.com/backup-restic-bucket"
     password-file: "restic_pass.txt"
     initialize: true
+    status-file: '{{ $status_file }}'
+    extended-status: true
+    run-finally: 'cat {{ $status_file }} >> {{ $status_log_file }}'
     backup:
       exclude-caches: true
       one-file-system: true
+      run-before: 
+        - 'echo "" >> {{$backup_log_file}}'
+        - 'echo "[$(date -Is)] ====== running $PROFILE_COMMAND on $PROFILE_NAME" >> {{$backup_log_file}}'
+      run-finally: 
+        - 'echo "[$(date -Is)] ====== finished $PROFILE_COMMAND on $PROFILE_NAME" >> {{$backup_log_file}}'
+        - 'echo "" >> {{$backup_log_file}}'
     retention:
       after-backup: true
       prune: true
     check:
       read-data-subset: 1M
-      schedule-log: "/srv/var/logs/backup_scripts/restic-check.log"
+      run-before: 
+        - 'echo "" >> {{$check_log_file}}'
+        - 'echo "[$(date -Is)] ====== running $PROFILE_COMMAND on $PROFILE_NAME" >> {{$check_log_file}}'
+      run-finally: 
+        - 'echo "[$(date -Is)] ====== finished $PROFILE_COMMAND on $PROFILE_NAME" >> {{$check_log_file}}'
+        - 'echo "" >> {{$check_log_file}}'
     force-inactive-lock: true
 
   srv_docs:
