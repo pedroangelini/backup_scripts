@@ -11,7 +11,9 @@ declare -a src_arr=(
     "/mnt/dados/BackupsToCloud"
     "/mnt/dados/Books"
     "/mnt/dados/immich-library/library"
+    "/mnt/dados/immich-library/backups"
     "/mnt/dados/server_docs"
+    "/mnt/dados/datalake"
 )
 dest="/srv/backups/"
 
