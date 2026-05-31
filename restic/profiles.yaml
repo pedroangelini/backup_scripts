@@ -36,7 +36,7 @@ groups:
         at: '*-*-* 02:00:00'
         log: '{{ $backup_log_file }}'
       check:
-        at: '*-*-* 03:00:00'
+        at: 'Mon,Fri *-*-* 03:00:00'
         log: '{{ $check_log_file }}'
 
 
@@ -76,6 +76,7 @@ profiles:
     backup:
       source:
         - "/mnt/dados/server_docs"
+        - "/mnt/dados/kb"
 
     retention:
       keep-daily: 7
