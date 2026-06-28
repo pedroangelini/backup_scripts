@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Import all parts of a Google Photos takeout
+./immich-go upload from-google-photos \
+  --server=http://space-monster:2283/ \
+  --api-key=X1nfLU3Fmg7dSAcGF2mizpmjESJ5loA2JLGXt0TCOv4 \
+  --concurrent-tasks=16 \
+  --client-timeout=30m \
+  --pause-immich-jobs=true \
+  --on-errors=continue \
+  --manage-raw-jpeg=StackCoverRaw \
+  --manage-burst=Stack \
+  --log-level=INFO \
+  --log-file="upload-2026-06-27.log" \
+  --include-unmatched \
+  --include-partner \
+  --takeout-tag \
+  --session-tag \
+  --sync-albums \
+  --partner-shared-album \
+  --people-tag \
+  ./takeout-*.zip
